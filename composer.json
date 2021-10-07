@@ -1,5 +1,5 @@
 {
-    "name": "antonioprimera/config-permissions",
+    "name": "antonioprimera/laravel-config-permissions",
     "description": "A simple package enabling the use of roles and permissions from a config file in a Laravel app.",
     "type": "library",
     "license": "MIT",
