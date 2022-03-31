@@ -1,5 +1,5 @@
 {
-    "name": "antonioprimera/laravel-config-permissions",
+    "name": "antonioprimera/laravel-basic-permissions",
     "description": "A simple package enabling the use of roles and permissions from a config file in a Laravel app.",
     "type": "library",
     "license": "MIT",
@@ -9,28 +9,27 @@
             "email": "antonio@cus.ro"
         }
     ],
-    "minimum-stability": "dev",
+
     "require-dev": {
-        "orchestra/testbench": "^6",
-        "antonioprimera/lara-packager": "^1.3"
+        "orchestra/testbench": "^6"
     },
+
     "autoload": {
         "psr-4": {
-            "AntonioPrimera\\ConfigPermissions\\": "src/"
+            "AntonioPrimera\\BasicPermissions\\": "src/"
         }
     },
+
     "autoload-dev": {
         "psr-4": {
-            "AntonioPrimera\\ConfigPermissions\\Tests\\": "tests/"
+            "AntonioPrimera\\BasicPermissions\\Tests\\": "tests/"
         }
     },
-    "require": {
-        "spatie/laravel-package-tools": "^1.9"
-    },
+
     "extra": {
         "laravel": {
             "providers": [
-                "AntonioPrimera\\ConfigPermissions\\ConfigPermissionsServiceProvider"
+                "BasicPermissionsServiceProvider"
             ]
         }
     }

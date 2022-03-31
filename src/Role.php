@@ -1,25 +1,27 @@
 <?php
-
-namespace AntonioPrimera\ConfigPermissions;
+namespace AntonioPrimera\BasicPermissions;
 
 class Role
 {
-	protected $config = [];
-	protected $isSuperAdmin = false;
-	protected $inheritedRoles = [];
-	protected $permissions = [];
-	protected $permissionSeparator = ':';
+	//configured attributes
+	protected mixed $config;
+	protected bool $isSuperAdmin;
+	protected array $inheritedRoles = [];
+	protected array $permissions = [];
 	
-	protected $name;
-	protected $parentRole;
+	//role specific attributes
+	protected string $name;
+	protected ?Role $parentRole = null;
 	
-	protected $inheritedRolesAreSetUp = false;
+	//technical attributes
+	protected string $permissionSeparator;
+	protected bool $inheritedRolesAreSetUp = false;
 	
 	public function __construct(?string $name)
 	{
 		$this->name = $name ?: 'UNDEFINED';
 		
-		$this->config = config("permissions.roles.{$name}");
+		$this->config = config("permissions.roles.{$name}", []);
 		$this->isSuperAdmin = $this->getConfigPermissions() === '*';
 		$this->permissionSeparator = config("permissions.permissionSeparator", ':');
 	}

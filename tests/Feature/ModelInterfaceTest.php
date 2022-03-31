@@ -1,10 +1,10 @@
 <?php
-namespace AntonioPrimera\ConfigPermissions\Tests\Feature;
+namespace AntonioPrimera\BasicPermissions\Tests\Feature;
 
-use AntonioPrimera\ConfigPermissions\ActorInterface;
-use AntonioPrimera\ConfigPermissions\Role;
-use AntonioPrimera\ConfigPermissions\Tests\TestCase;
-use AntonioPrimera\ConfigPermissions\Tests\TestContext\Models\TestUser;
+use AntonioPrimera\BasicPermissions\ActorInterface;
+use AntonioPrimera\BasicPermissions\Role;
+use AntonioPrimera\BasicPermissions\Tests\TestCase;
+use AntonioPrimera\BasicPermissions\Tests\TestContext\Models\TestUser;
 
 class ModelInterfaceTest extends TestCase
 {

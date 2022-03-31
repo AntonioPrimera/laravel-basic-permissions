@@ -1,8 +1,7 @@
 <?php
+namespace AntonioPrimera\BasicPermissions\Tests\Unit;
 
-namespace AntonioPrimera\ConfigPermissions\Tests\Unit;
-
-use AntonioPrimera\ConfigPermissions\Role;
+use AntonioPrimera\BasicPermissions\Role;
 use Orchestra\Testbench\TestCase;
 
 class PermissionToRoleAssignmentTest extends TestCase

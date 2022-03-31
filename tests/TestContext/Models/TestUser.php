@@ -1,11 +1,11 @@
 <?php
+namespace AntonioPrimera\BasicPermissions\Tests\TestContext\Models;
 
-namespace AntonioPrimera\ConfigPermissions\Tests\TestContext\Models;
+use AntonioPrimera\BasicPermissions\ActorInterface;
+use AntonioPrimera\BasicPermissions\ActorRolesAndPermissions;
+use Illuminate\Database\Eloquent\Model;
 
-use AntonioPrimera\ConfigPermissions\ActorInterface;
-use AntonioPrimera\ConfigPermissions\ActorRolesAndPermissions;
-
-class TestUser extends \Illuminate\Database\Eloquent\Model implements ActorInterface
+class TestUser extends Model implements ActorInterface
 {
 	use ActorRolesAndPermissions;
 	
