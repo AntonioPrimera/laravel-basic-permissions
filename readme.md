@@ -139,4 +139,40 @@ define roles with circular inheritance (e.g. role_1, inherits role_2, which inhe
 unexpected outcomes, so please try to avoid it.
 
 You can use either the `roles` or the `inherits` array key to define the array of inherited roles. It's a matter of
-preference, which key you use - their scope is identical.gacp 
+preference, which key you use - their scope is identical.gacp
+
+## Testing specific permissions
+
+Because Testing is (or should be) an important part of the development process, this package has some built-in helpers,
+to enable easy testing. Simply put, you can add and remove specific transient permissions to the actor instance. As
+the label implies, these permissions are transient and will not be saved to the DB or to any config. They will be gone
+the next time you fetch the actor from the DB (or create a new instance of this actor).
+
+#### Assign a transient / temporary permission
+
+In your tests, you might want to check that a specific action can be done only by actors with a specific permission.
+To add a single permission to the actor, you can use the following syntax:
+
+```php
+$user->assignTemporaryPermission('some:permission:name');
+```
+
+All checks for this, permission will return true, until this user is destroyed and re-read from the DB. Please be aware
+that the transient permissions are saved on the instance, so a `$user->refresh()` call will not reset these transient
+permissions.
+
+#### Remove a transient / temporary permission
+
+You can remove a temporary (transient) permission from an actor, with the following method:
+
+```php
+$user->removeTemporaryPermission('some:permission:name');
+```
+
+#### Clear all transient / temporary permissions
+
+You can remove all temporary (transient) permissions from an actor, with the following method:
+
+```php
+$user->clearTemporaryPermissions();
+```

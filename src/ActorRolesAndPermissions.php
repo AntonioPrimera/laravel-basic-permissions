@@ -4,6 +4,7 @@ namespace AntonioPrimera\BasicPermissions;
 trait ActorRolesAndPermissions
 {
 	protected ?Role $roleInstance = null;
+	protected array $transientPermissions = [];
 	
 	//--- ActorInterface method implementations -----------------------------------------------------------------------
 	
@@ -15,7 +16,7 @@ trait ActorRolesAndPermissions
 		return $this->roleInstance;
 	}
 	
-	public function setRole(string $role)
+	public function setRole(string $role): static
 	{
 		$this->role = $role;
 		$this->save();
@@ -25,7 +26,7 @@ trait ActorRolesAndPermissions
 	
 	public function hasPermission(string $permission) : bool
 	{
-		return $this->getRole()->hasPermission($permission);
+		return $this->getRole()->hasPermission($permission) || $this->hasTemporaryPermission($permission);
 	}
 	
 	public function hasAllPermissions(iterable $permissions) : bool
@@ -46,5 +47,30 @@ trait ActorRolesAndPermissions
 		}
 		
 		return false;
+	}
+	
+	//--- Testing helpers ---------------------------------------------------------------------------------------------
+	
+	public function assignTemporaryPermission(string $permission): static
+	{
+		$this->transientPermissions[$permission] = true;
+		return $this;
+	}
+	
+	public function removeTemporaryPermission(string $permission): static
+	{
+		unset($this->transientPermissions[$permission]);
+		return $this;
+	}
+	
+	public function clearTemporaryPermissions(): static
+	{
+		$this->transientPermissions = [];
+		return $this;
+	}
+	
+	public function hasTemporaryPermission(string $permission): bool
+	{
+		return $this->transientPermissions[$permission] ?? false;
 	}
 }

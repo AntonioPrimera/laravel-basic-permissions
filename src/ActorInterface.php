@@ -12,7 +12,7 @@ interface ActorInterface
 	/**
 	 * Set the role on the model and save the model
 	 */
-	public function setRole(string $role);
+	public function setRole(string $role): static;
 	
 	/**
 	 * Check if the actor has a given permission
