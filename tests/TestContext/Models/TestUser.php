@@ -3,6 +3,7 @@ namespace AntonioPrimera\BasicPermissions\Tests\TestContext\Models;
 
 use AntonioPrimera\BasicPermissions\ActorInterface;
 use AntonioPrimera\BasicPermissions\ActorRolesAndPermissions;
+use AntonioPrimera\BasicPermissions\Role;
 use Illuminate\Database\Eloquent\Model;
 
 class TestUser extends Model implements ActorInterface
@@ -12,5 +13,4 @@ class TestUser extends Model implements ActorInterface
 	protected $table = 'users';
 	protected $guarded = [];
 	public $timestamps = false;
-	
 }

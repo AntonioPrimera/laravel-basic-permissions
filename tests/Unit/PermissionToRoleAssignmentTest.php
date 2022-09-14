@@ -113,7 +113,7 @@ class PermissionToRoleAssignmentTest extends TestCase
 							]
 						],
 						
-						'inherits' => [
+						'roles' => [
 							'storeHelper'
 						]
 					],
@@ -365,7 +365,7 @@ class PermissionToRoleAssignmentTest extends TestCase
 							]
 						],
 					
-						'inherits' => [
+						'roles' => [
 							'storeOwner',		//valid inheritance
 						]
 					],

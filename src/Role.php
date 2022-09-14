@@ -3,34 +3,43 @@ namespace AntonioPrimera\BasicPermissions;
 
 class Role
 {
-	//configured attributes
+	use RoleAndPermissionUtilities;
+	
+	//role attributes
+	protected string $name;
+	
+	//config data
 	protected mixed $config;
 	protected bool $isSuperAdmin;
-	protected array $inheritedRoles = [];
-	protected array $permissions = [];
-	
-	//role specific attributes
-	protected string $name;
-	protected ?Role $parentRole = null;
-	
-	//technical attributes
-	protected string $permissionSeparator;
-	protected bool $inheritedRolesAreSetUp = false;
 	
 	public function __construct(?string $name)
 	{
 		$this->name = $name ?: 'UNDEFINED';
-		
-		$this->config = config("permissions.roles.{$name}", []);
-		$this->isSuperAdmin = $this->getConfigPermissions() === '*';
-		$this->permissionSeparator = config("permissions.permissionSeparator", ':');
+		$this->config = $this->getRoleConfig($name);
+		$this->isSuperAdmin = $this->getRoleConfigAssignedPermissions($this->config) === '*';
+	}
+	
+	/**
+	 * Normalize a Role instance or a role name to a Role instance.
+	 */
+	public static function instance(Role|string $role): static
+	{
+		return $role instanceof Role ? $role : new static($role);
+	}
+	
+	/**
+	 * Normalize a Role instance or a role name to a string role name.
+	 */
+	public static function name(Role|string $role): string
+	{
+		return $role instanceof Role ? $role->getName() : $role;
 	}
 	
 	//=== Public methods ==============================================================================================
 	
 	//--- Getters -----------------------------------------------------------------------------------------------------
 	
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
@@ -44,100 +53,80 @@ class Role
 	
 	public function hasPermission(string $permission) : bool
 	{
-		return $this->isSuperAdmin || $this->hasOwnPermission($permission) || $this->inheritsPermission($permission);
+		//super-admins are allowed to do anything
+		if ($this->isSuperAdmin)
+			return true;
+		
+		//check if the role allows the given action itself
+		if ($this->permissionSetContainsPermission($this->getRoleConfigAssignedPermissions($this->config), $permission))
+			return true;
+		
+		//check if any of the inherited roles allow the given action
+		$inheritedRoleNames = $this->determineInheritedRolesList($this->name);
+		
+		foreach ($inheritedRoleNames as $inheritedRoleName)
+			if ($this->permissionSetContainsPermission($this->getAssignedPermissions($inheritedRoleName), $permission))
+				return true;
+		
+		return false;
+	}
+	
+	//--- Dealing with inherited roles --------------------------------------------------------------------------------
+	
+	public function getInheritedRoles(bool $deep = false): array
+	{
+		$roleNameList = $deep
+			? $this->determineInheritedRolesList($this->name)
+			: $this->getRoleConfigAssignedRoles($this->config);
+		
+		return $this->getRoleInstances($roleNameList);
+	}
+	
+	public function inheritsRole(Role|string $role): bool
+	{
+		return in_array(
+			$role instanceof Role ? $role->name : $role,
+			$this->determineInheritedRolesList($this->name)
+		);
 	}
 	
 	//=== Protected methods ===========================================================================================
 	
-	//--- Checking permissions ----------------------------------------------------------------------------------------
-	
-	protected function hasOwnPermission(string $permission) : bool
-	{
-		return $this->permissionSetContainsPermission($this->getConfigPermissions(), $permission);
-	}
-	
+	/**
+	 * Given a list of permissions, check if a permission is included in the given list. This is the
+	 * base method for checking whether a (string) permission is allowed by a permission set.
+	 * The permission set can be: (string) '*', an indexed or a deep associative array.
+	 *
+	 * This check also covers wildcards:
+	 * 		e.g. 'store:read' is allowed by permission set: '*'
+	 * 			 'store:read' is allowed by permission set: ['store' => '*']
+	 * 			 'store:read' is allowed by permission set: ['store' => ['read']]
+	 *			 'store:read:single' is allowed by permission set: ['store' => ['read' => ['single]]]
+	 */
 	protected function permissionSetContainsPermission(array | string $permissionList, string $permission) : bool
 	{
+		$permissionSeparator = $this->getPermissionSeparator();
+		
 		//split the permission into components (e.g. 'store:create' => ['store', 'create'])
-		$permissionComponents = array_filter(explode($this->permissionSeparator, $permission));
+		$permissionComponents = array_filter(explode($permissionSeparator, $permission));
 		if (!$permissionComponents)
 			return false;
 		
-		//the only acceptable string is '*' - all permissions
+		//the only acceptable string is '*' - super-admin: allows all permissions
 		if (is_string($permissionList))
 			return $permissionList === '*';
 		
 		$firstComponent = array_shift($permissionComponents);
 		
-		//if no more permission components are left, just search it in the given permission list
+		//if the permission is a simple one (just one component), search it in the given permission list
 		if (!$permissionComponents)
 			return $firstComponent && in_array($firstComponent, $permissionList);
 		
+		//the permission is a complex one (e.g. store:create), so it must match 'store' => ['create', ...]
 		return array_key_exists($firstComponent, $permissionList)
-			? $this->permissionSetContainsPermission(
+			&& $this->permissionSetContainsPermission(
 				$permissionList[$firstComponent],
-				implode($this->permissionSeparator, $permissionComponents)
-			)
-			: false;
-	}
-	
-	protected function inheritsPermission($permission) : bool
-	{
-		if (!$this->inheritedRolesAreSetUp)
-			$this->lazySetupInheritedRoles();
-		
-		foreach ($this->inheritedRoles as $inheritedRole) {
-			if ($inheritedRole->hasPermission($permission))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	protected function getConfigPermissions() : array | string
-	{
-		return $this->config['permissions'] ?? [];
-	}
-	
-	protected function getConfigInheritedRoleNames() : array
-	{
-		if (is_array($this->config['roles'] ?? null))
-			return $this->config['roles'];
-		
-		if (is_array($this->config['inherits'] ?? null))
-			return $this->config['inherits'];
-		
-		return [];
-	}
-	
-	//--- Setup -------------------------------------------------------------------------------------------------------
-	
-	protected function lazySetupInheritedRoles()
-	{
-		//set the flag, so that we don't attempt to do this setup a second time
-		$this->inheritedRolesAreSetUp = true;
-		
-		//don't set up any inherited roles if this is a circularly inherited role
-		if ($this->isCircularInheritance())
-			return;
-		
-		foreach ($this->getConfigInheritedRoleNames() as $inheritedRoleName) {
-			$this->inheritedRoles[$inheritedRoleName] = new Role($inheritedRoleName);
-			$this->inheritedRoles[$inheritedRoleName]->parentRole = $this;
-		}
-	}
-	
-	protected function isCircularInheritance() : bool
-	{
-		$parentRole = $this->parentRole;
-		
-		while ($parentRole) {
-			if ($parentRole->name === $this->name)
-				return true;
-			
-			$parentRole = $parentRole->parentRole;
-		}
-		
-		return false;
+				implode($permissionSeparator, $permissionComponents)
+			);
 	}
 }

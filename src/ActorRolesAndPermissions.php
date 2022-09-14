@@ -1,6 +1,9 @@
 <?php
 namespace AntonioPrimera\BasicPermissions;
 
+/**
+ * @property Role|null|string $role
+ */
 trait ActorRolesAndPermissions
 {
 	protected ?Role $roleInstance = null;
@@ -10,15 +13,27 @@ trait ActorRolesAndPermissions
 	
 	public function getRole() : Role
 	{
-		if (!$this->roleInstance)
-			$this->roleInstance = new Role($this->role ?? null);
-			
-		return $this->roleInstance;
+		//if the role is cast, use it
+		if ($this->role instanceof Role)
+			return $this->role;
+		
+		//if no custom attribute role cast is used or if role is null, use a cached role instance
+		//an attribute with a null value will not be cast, so a cached role instance is welcome
+		return $this->roleInstance ?: ($this->roleInstance = new Role($this->role));
 	}
 	
-	public function setRole(string $role): static
+	public function setRole(Role|string $role): static
 	{
-		$this->role = $role;
+		//update for cast role attribute
+		if ($this->hasCast('role')) {
+			$this->role = Role::instance($role);
+			$this->save();
+			return $this;
+		}
+		
+		//update the role attribute (no custom attribute cast)
+		$this->role = Role::name($role);
+		$this->roleInstance = Role::instance($role);	//update the cached role
 		$this->save();
 		
 		return $this;
