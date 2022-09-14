@@ -64,6 +64,13 @@ trait ActorRolesAndPermissions
 		return false;
 	}
 	
+	//--- Syntactic sugar ---------------------------------------------------------------------------------------------
+	
+	public function isSuperAdmin(): bool
+	{
+		return $this->getRole()->isSuperAdmin();
+	}
+	
 	//--- Testing helpers ---------------------------------------------------------------------------------------------
 	
 	public function assignTemporaryPermission(string $permission): static
