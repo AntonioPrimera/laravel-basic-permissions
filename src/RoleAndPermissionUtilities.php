@@ -20,8 +20,11 @@ trait RoleAndPermissionUtilities
 	 * Searches recursively for the entire list of inherited roles
 	 * by a given role, ignoring circular references.
 	 */
-	protected function determineInheritedRolesList(string $roleName, array &$visitedRoleNames = []): array
+	protected function determineInheritedRolesList(string|null $roleName, array &$visitedRoleNames = []): array
 	{
+		if (!$roleName)
+			return [];
+		
 		$inheritedRoleNames = $this->getAssignedRoles($roleName);
 		$roleNamesToCheck = array_diff($inheritedRoleNames, $visitedRoleNames);
 		$visitedRoleNames = array_unique(array_merge($visitedRoleNames, $roleNamesToCheck));
@@ -39,7 +42,7 @@ trait RoleAndPermissionUtilities
 	 * Given a list of role names, return an associative array
 	 * of [roleName => RoleInstance] pairs.
 	 */
-	protected function getRoleInstances(array|string $roleNames): array
+	protected function getRoleInstances(array|string|null $roleNames): array
 	{
 		$roles = [];
 		
@@ -76,7 +79,7 @@ trait RoleAndPermissionUtilities
 	 */
 	protected function getAssignedRoles(?string $roleName): array
 	{
-		return $this->getRoleConfigAssignedRoles($this->getRoleConfig($roleName));
+		return $roleName ? $this->getRoleConfigAssignedRoles($this->getRoleConfig($roleName)) : [];
 	}
 	
 	/**
@@ -86,7 +89,7 @@ trait RoleAndPermissionUtilities
 	 */
 	protected function getAssignedPermissions(?string $roleName): array|string
 	{
-		return $this->getRoleConfigAssignedPermissions($this->getRoleConfig($roleName));
+		return $roleName ? $this->getRoleConfigAssignedPermissions($this->getRoleConfig($roleName)) : [];
 	}
 	
 	/**

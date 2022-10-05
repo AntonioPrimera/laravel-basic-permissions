@@ -22,7 +22,7 @@ trait ActorRolesAndPermissions
 		return $this->roleInstance ?: ($this->roleInstance = new Role($this->role));
 	}
 	
-	public function setRole(Role|string $role): static
+	public function setRole(Role|string|null $role): static
 	{
 		//update for cast role attribute
 		if ($this->hasCast('role')) {

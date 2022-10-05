@@ -287,7 +287,7 @@ class PermissionToRoleAssignmentTest extends TestCase
 	public function creating_a_role_with_a_null_name_will_just_create_a_role_with_no_permissions()
 	{
 		$role = new Role(null);
-		$this->assertEquals('UNDEFINED', $role->getName());
+		$this->assertNull($role->getName());
 		
 		$this->assertFalse($role->hasPermission('store:manage'));
 		$this->assertFalse($role->hasPermission('items:create'));

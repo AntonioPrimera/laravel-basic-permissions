@@ -6,7 +6,8 @@ class Role
 	use RoleAndPermissionUtilities;
 	
 	//role attributes
-	protected string $name;
+	protected string|null $name;
+	protected bool $isEmpty;	//whether this is a real role, or just an empty role with no permissions
 	
 	//config data
 	protected mixed $config;
@@ -14,7 +15,8 @@ class Role
 	
 	public function __construct(?string $name)
 	{
-		$this->name = $name ?: 'UNDEFINED';
+		$this->name = $name;
+		$this->isEmpty = !$name;
 		$this->config = $this->getRoleConfig($name);
 		$this->isSuperAdmin = $this->getRoleConfigAssignedPermissions($this->config) === '*';
 	}
@@ -22,7 +24,7 @@ class Role
 	/**
 	 * Normalize a Role instance or a role name to a Role instance.
 	 */
-	public static function instance(Role|string $role): static
+	public static function instance(Role|string|null $role): static
 	{
 		return $role instanceof Role ? $role : new static($role);
 	}
@@ -30,7 +32,7 @@ class Role
 	/**
 	 * Normalize a Role instance or a role name to a string role name.
 	 */
-	public static function name(Role|string $role): string
+	public static function name(Role|string|null $role): string|null
 	{
 		return $role instanceof Role ? $role->getName() : $role;
 	}
@@ -39,7 +41,7 @@ class Role
 	
 	//--- Getters -----------------------------------------------------------------------------------------------------
 	
-	public function getName(): string
+	public function getName(): string|null
 	{
 		return $this->name;
 	}
@@ -49,10 +51,19 @@ class Role
 		return $this->isSuperAdmin;
 	}
 	
+	public function isEmpty(): bool
+	{
+		return $this->isEmpty;
+	}
+	
 	//--- Dealing with permissions ------------------------------------------------------------------------------------
 	
 	public function hasPermission(string $permission) : bool
 	{
+		//empty roles have no permission
+		if ($this->isEmpty)
+			return false;
+		
 		//super-admins are allowed to do anything
 		if ($this->isSuperAdmin)
 			return true;
@@ -75,6 +86,9 @@ class Role
 	
 	public function getInheritedRoles(bool $deep = false): array
 	{
+		if ($this->isEmpty)
+			return [];
+		
 		$roleNameList = $deep
 			? $this->determineInheritedRolesList($this->name)
 			: $this->getRoleConfigAssignedRoles($this->config);
@@ -84,7 +98,8 @@ class Role
 	
 	public function inheritsRole(Role|string $role): bool
 	{
-		return in_array(
+		return !$this->isEmpty
+			&& in_array(
 			$role instanceof Role ? $role->name : $role,
 			$this->determineInheritedRolesList($this->name)
 		);
