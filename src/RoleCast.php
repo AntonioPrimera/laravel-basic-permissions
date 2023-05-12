@@ -14,6 +14,6 @@ class RoleCast implements CastsAttributes
 	
 	public function set($model, string $key, $value, array $attributes)
 	{
-		return $value->getName();
+		return $value instanceof Role ? $value->getName() : $value;
 	}
 }
