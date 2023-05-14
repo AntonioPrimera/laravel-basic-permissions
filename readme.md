@@ -161,15 +161,7 @@ define roles with circular inheritance (e.g. role_1, inherits role_2, which inhe
 unexpected outcomes, so please try to avoid it.
 
 You can use the `roles` array key to define the array of inherited roles. It's a matter of
-preference, which key you use - their scope is identical.gacp
-
-## Testing specific permissions
-
-Because Testing is (or should be) an important part of the development process, this package has some built-in helpers,
-to enable easy testing. Simply put, you can add and remove specific transient permissions to the actor instance. As
-the label implies, these permissions are transient and will not be saved to the DB or to any config. They will be gone
-the next time you fetch the actor from the DB (or create a new instance of this actor).
-
+preference, which key you use - their scope is identical.
 
 ### Permission Labels
 
@@ -210,6 +202,28 @@ Here's an example of a permission with a description in English and Spanish:
     //...other permission attributes
 ],
 ```
+
+### String and Html representations
+
+The role can be cast to string, which will return the role label. If no label is provided, the role name will be
+returned instead.
+
+The role can also be cast to Html, which is useful when displaying the role in a blade file. The Html representation
+will return the role label. If no label is provided, the role name will be returned instead.
+
+```php
+(string) $role; //returns the role label, or the role name if no label is provided
+
+//in a blade file:
+{{ $role }} //returns the role label, or the role name if no label is provided
+```
+
+## Testing specific permissions
+
+Because Testing is (or should be) an important part of the development process, this package has some built-in helpers,
+to enable easy testing. Simply put, you can add and remove specific transient permissions to the actor instance. As
+the label implies, these permissions are transient and will not be saved to the DB or to any config. They will be gone
+the next time you fetch the actor from the DB (or create a new instance of this actor).
 
 #### Assign a transient / temporary permission
 
