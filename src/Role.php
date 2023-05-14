@@ -131,7 +131,7 @@ class Role
 	
 	//=== Accessors ===================================================================================================
 	
-	protected function getLabelAttribute(): string
+	protected function getLabelAttribute(): string|null
 	{
 		$configLabel = $this->config['label'] ?? null;
 		

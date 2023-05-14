@@ -216,4 +216,13 @@ class RoleMagicAttributesTest extends TestCase
 		
 		$this->assertNull($role->description);
 	}
+	
+	/** @test */
+	public function it_will_return_null_for_a_null_role()
+	{
+		$role = new Role(null);
+		
+		$this->assertNull($role->label);
+		$this->assertNull($role->description);
+	}
 }
