@@ -170,6 +170,47 @@ to enable easy testing. Simply put, you can add and remove specific transient pe
 the label implies, these permissions are transient and will not be saved to the DB or to any config. They will be gone
 the next time you fetch the actor from the DB (or create a new instance of this actor).
 
+
+### Permission Labels
+
+In order to display the roles for humans, you can add a `label` attribute to each role. This label can be used in
+dropdown menus or when displaying the role in the UI. If no label is provided, the role name will be used instead.
+
+The role label can be provided as a string or as an array with translations. When a translation is provided, the
+application will try to use the current locale to display the label. If no translation is found for the current locale,
+the fallback locale will be used instead.
+
+Here's an example of a role with a label in English and Spanish:
+
+```php
+'store-admin'	=> [
+    'label' => [
+        'en' => 'Store Admin',
+        'es' => 'Administrador de Tienda',
+    ],
+    //...other role attributes
+],
+```
+
+### Permission Description
+
+You can add a description to each permission, which can be used to display a tooltip or a help text in the UI. The
+description can be provided as a string or as an array with translations. When a translation is provided, the
+application will try to use the current locale to display the description. If no translation is found for the current
+locale, the fallback locale will be used instead.
+
+Here's an example of a permission with a description in English and Spanish:
+
+```php
+'store:manage'	=> [
+    'description' => [
+        'en' => 'Allows the user to manage the store',
+        'es' => 'Permite al usuario administrar la tienda',
+    ],
+    //...other permission attributes
+],
+```
+
 #### Assign a transient / temporary permission
 
 In your tests, you might want to check that a specific action can be done only by actors with a specific permission.

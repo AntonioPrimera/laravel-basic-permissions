@@ -1,6 +1,13 @@
 <?php
 namespace AntonioPrimera\BasicPermissions;
 
+/**
+ * Class Role
+ * @package AntonioPrimera\BasicPermissions
+ *
+ * @property string $label
+ * @property string|null $description
+ */
 class Role
 {
 	use RoleAndPermissionUtilities;
@@ -35,6 +42,23 @@ class Role
 	public static function name(Role|string|null $role): string|null
 	{
 		return $role instanceof Role ? $role->getName() : $role;
+	}
+	
+	//=== Magic stuff =================================================================================================
+	
+	public function __get(string $name)
+	{
+		if (is_callable([$this, $method = 'get' . ucfirst($name) . 'Attribute']))
+			return $this->$method();
+		
+		$trace = debug_backtrace();
+		trigger_error(
+			'Undefined property via __get(): ' . $name .
+			' in ' . $trace[0]['file'] .
+			' on line ' . $trace[0]['line'],
+			E_USER_NOTICE);
+		
+		return null;
 	}
 	
 	//=== Public methods ==============================================================================================
@@ -103,6 +127,42 @@ class Role
 			$role instanceof Role ? $role->name : $role,
 			$this->determineInheritedRolesList($this->name)
 		);
+	}
+	
+	//=== Accessors ===================================================================================================
+	
+	protected function getLabelAttribute(): string
+	{
+		$configLabel = $this->config['label'] ?? null;
+		
+		//if a simple string is provided, just return it
+		if (is_string($configLabel))
+			return $configLabel;
+		
+		if (is_array($configLabel))
+			return $configLabel[app()->getLocale()]									//get the label for current locale
+				?? $configLabel[config('app.fallback_locale', 'en')]	//try the fallback locale
+				?? $configLabel['en']												//try english as a last resort
+				?? $this->name;														//if all else fails, return the name
+			
+		return $this->name;
+	}
+	
+	protected function getDescriptionAttribute(): string|null
+	{
+		$configDescription = $this->config['description'] ?? null;
+		
+		//if a simple string is provided, just return it
+		if (is_string($configDescription))
+			return $configDescription;
+		
+		if (is_array($configDescription))
+			return $configDescription[app()->getLocale()]					//get the description for the current locale
+				?? $configDescription[config('app.fallback_locale', 'en')]	//try the fallback locale
+				?? $configDescription['en']									//try english as a last resort
+				?? null;													//if all else fails, return null
+		
+		return null;
 	}
 	
 	//=== Protected methods ===========================================================================================
