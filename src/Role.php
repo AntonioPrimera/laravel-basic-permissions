@@ -1,14 +1,17 @@
 <?php
 namespace AntonioPrimera\BasicPermissions;
 
+use Illuminate\Contracts\Support\Htmlable;
+
 /**
  * Class Role
+ *
  * @package AntonioPrimera\BasicPermissions
  *
  * @property string $label
  * @property string|null $description
  */
-class Role
+class Role implements Htmlable, \Stringable
 {
 	use RoleAndPermissionUtilities;
 	
@@ -203,5 +206,17 @@ class Role
 				$permissionList[$firstComponent],
 				implode($permissionSeparator, $permissionComponents)
 			);
+	}
+	
+	//=== Interface implementation ====================================================================================
+	
+	public function __toString(): string
+	{
+		return $this->label ?: '';
+	}
+	
+	public function toHtml(): string
+	{
+		return $this->label ?: '';
 	}
 }
