@@ -71,6 +71,13 @@ trait ActorRolesAndPermissions
 		return $this->getRole()->isSuperAdmin();
 	}
 	
+	public function hasRole(Role|string $role): bool
+	{
+		$currentRole = $this->role instanceof Role ? $this->role->getName() : $this->role;
+		$roleName = $role instanceof Role ? $role->getName() : $role;
+		return $currentRole === $roleName;
+	}
+	
 	//--- Testing helpers ---------------------------------------------------------------------------------------------
 	
 	public function assignTemporaryPermission(string $permission): static
