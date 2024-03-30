@@ -66,6 +66,11 @@ class Role implements Htmlable, \Stringable
 	
 	//=== Public methods ==============================================================================================
 	
+	public function is(string|Role $role): bool
+	{
+		return $this->name === ($role instanceof Role ? $role->name : $role);
+	}
+	
 	//--- Getters -----------------------------------------------------------------------------------------------------
 	
 	public function getName(): string|null
