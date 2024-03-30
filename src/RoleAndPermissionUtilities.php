@@ -55,13 +55,18 @@ trait RoleAndPermissionUtilities
 	
 	//--- Generic Config Helpers --------------------------------------------------------------------------------------
 	
+	protected function roleConfigKey(string $roleName, string|null $key = null): string
+	{
+		return "permissions.roles.$roleName" . ($key ? ".$key" : '');
+	}
+	
 	/**
 	 * Get the config of a given role
 	 */
-	protected function getRoleConfig(?string $roleName, ?string $key = null)
+	protected function getRoleConfig(string|null $roleName, string|null $key = null)
 	{
 		return $roleName
-			? config("permissions.roles.$roleName" . ($key ? ".$key" : ''), [])
+			? config($this->roleConfigKey($roleName, $key), [])
 			: [];
 	}
 	

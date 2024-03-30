@@ -66,9 +66,19 @@ class Role implements Htmlable, \Stringable
 	
 	//=== Public methods ==============================================================================================
 	
+	//check whether a given role name or Role instance is the same as this role
 	public function is(string|Role $role): bool
 	{
 		return $this->name === ($role instanceof Role ? $role->name : $role);
+	}
+	
+	/**
+	 * Check whether a role with the given name exists
+	 * A role exists if it is configured in the permissions config file
+	 */
+	public function exists(): bool
+	{
+		return $this->isNotEmpty() && config($this->roleConfigKey($this->name), false) !== false;
 	}
 	
 	//--- Getters -----------------------------------------------------------------------------------------------------
@@ -86,6 +96,11 @@ class Role implements Htmlable, \Stringable
 	public function isEmpty(): bool
 	{
 		return $this->isEmpty;
+	}
+	
+	public function isNotEmpty(): bool
+	{
+		return !$this->isEmpty;
 	}
 	
 	//--- Dealing with permissions ------------------------------------------------------------------------------------
