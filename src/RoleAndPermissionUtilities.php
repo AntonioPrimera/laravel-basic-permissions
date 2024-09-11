@@ -70,6 +70,11 @@ trait RoleAndPermissionUtilities
 			: [];
 	}
 	
+	protected function roleHasConfig(string $roleName): bool
+	{
+		return config()->has($this->roleConfigKey($roleName));
+	}
+	
 	/**
 	 * Get the permission / action separator from the config.
 	 */

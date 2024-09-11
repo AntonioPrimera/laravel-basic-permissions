@@ -78,7 +78,7 @@ class Role implements Htmlable, \Stringable
 	 */
 	public function exists(): bool
 	{
-		return $this->isNotEmpty() && config($this->roleConfigKey($this->name), false) !== false;
+		return $this->isNotEmpty() && $this->roleHasConfig($this->name);
 	}
 	
 	//--- Getters -----------------------------------------------------------------------------------------------------

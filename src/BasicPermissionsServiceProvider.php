@@ -16,5 +16,9 @@ class BasicPermissionsServiceProvider extends ServiceProvider
 		if ($this->app->runningInConsole()) {
 			$this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 		}
+		
+		if (class_exists('Livewire\Livewire')) {
+			\Livewire\Livewire::propertySynthesizer(RoleSynthesizer::class);
+		}
 	}
 }
