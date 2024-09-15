@@ -22,11 +22,11 @@ interface ActorInterface
 	/**
 	 * Check if the actor has all permissions in a given list
 	 */
-	public function hasAllPermissions(iterable $permissions) : bool;
+	public function hasAllPermissions(...$permissions) : bool;
 	
 	/**
 	 * Check if the actor has at least one of the given permissions
 	 */
-	public function hasAnyPermission(iterable $permissions) : bool;
+	public function hasAnyPermission(...$permissions) : bool;
 	
 }

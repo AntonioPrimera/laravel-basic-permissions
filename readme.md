@@ -119,14 +119,28 @@ if ($user->hasPermission('store:manage'))
 You can check whether an actor is allowed all permissions from a list of permissions:
 
 ```php
+//provide the list of permissions as an array
 if ($user->hasAllPermissions(['store:manage', 'items:move', 'items:sell']))
+    //do something only if the actor has all the above permissions
+
+//OR
+
+//provide the list of permissions as separate arguments
+if ($user->hasAllPermissions('store:manage', 'items:move', 'items:sell'))
     //do something only if the actor has all the above permissions
 ```
 
 You can check whether an actor is allowed at least one permission from a list of permissions:
 
 ```php
+//provide the list of permissions as an array
 if ($user->hasAnyPermission(['store:manage', 'items:move', 'items:sell']))
+    //do something if the actor has at least one of the above permissions
+
+//OR
+
+//provide the list of permissions as separate arguments
+if ($user->hasAnyPermission('store:manage', 'items:move', 'items:sell'))
     //do something if the actor has at least one of the above permissions
 ```
 

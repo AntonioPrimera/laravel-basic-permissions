@@ -44,8 +44,15 @@ trait ActorRolesAndPermissions
 		return $this->getRole()->hasPermission($permission) || $this->hasTemporaryPermission($permission);
 	}
 	
-	public function hasAllPermissions(iterable $permissions) : bool
+	public function hasAllPermissions(...$permissions) : bool
 	{
+		if (empty($permissions))
+			return true;
+		
+		//if the first argument is an array, use it as the permissions list
+		if (is_iterable($permissions[0]))
+			$permissions = $permissions[0];
+			
 		foreach ($permissions as $permission) {
 			if (!$this->hasPermission($permission))
 				return false;
@@ -54,8 +61,15 @@ trait ActorRolesAndPermissions
 		return true;
 	}
 	
-	public function hasAnyPermission(iterable $permissions) : bool
+	public function hasAnyPermission(...$permissions) : bool
 	{
+		if (empty($permissions))
+			return false;
+		
+		//if the first argument is an array, use it as the permissions list
+		if (is_iterable($permissions[0]))
+			$permissions = $permissions[0];
+		
 		foreach ($permissions as $permission) {
 			if ($this->hasPermission($permission))
 				return true;
